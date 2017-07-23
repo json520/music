@@ -1,6 +1,6 @@
 <template>
   <div class="hello">
-    
+    搜索
     
   </div>
 </template>
@@ -12,6 +12,15 @@ export default {
     return {
       msg: 'Welcome to Your Vue.js App'
     }
+  },
+  methods:{
+    getFun(){
+      alert(1)
+    }
+  },
+  mounted(){
+    // this.getFun();
+    // this.getFun();/
   }
 }
 </script>
