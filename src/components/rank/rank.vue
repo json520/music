@@ -1,6 +1,7 @@
 <template>
   <div class="hello">
     排行榜
+    
   </div>
 </template>
 

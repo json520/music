@@ -1,6 +1,8 @@
 <template>
   <div class="hello">
-    推荐
+    <ul>
+    	<li></li>
+    </ul>
     
   </div>
 </template>
@@ -13,7 +15,8 @@ export default {
   name: 'hello',
   data () {
     return {
-      msg: 'Welcome to Your Vue.js App'
+      msg: 'Welcome to Your Vue.js App',
+      bannerList:[]
     }
   },
   methods:{

@@ -13,7 +13,7 @@ export default new Router({
   routes: [
     {
       path: '/',
-      redirect: '/rank'  //router的重定向，重定向的目标也可以是一个命名的路由名字或者方法！
+      redirect: '/recommend'  //router的重定向，重定向的目标也可以是一个命名的路由名字或者方法！
 
     },
     {
