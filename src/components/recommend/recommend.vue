@@ -1,7 +1,7 @@
 <template>
   <div class="hello">
     <ul>
-    	<li></li>
+    	<li v-for="(item,index) in bannerList"></li>
     </ul>
     
   </div>
@@ -26,6 +26,7 @@ export default {
         console.log(res)
         if(res.code === ERR_ok){
           console.log('成功返回')
+          this.bannerList = res.data.radioList;
         }
       }).catch((err) =>{
         console.log(err)
