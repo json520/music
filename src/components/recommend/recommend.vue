@@ -1,7 +1,9 @@
 <template>
   <div class="hello">
     <ul>
-    	<li v-for="(item,index) in bannerList"></li>
+    	<li v-for="(item,index) in bannerList">
+        <img :src="item.picUrl" alt="">
+      </li>
     </ul>
     
   </div>
@@ -21,12 +23,12 @@ export default {
   },
   methods:{
     getAjaxData(){
-      // alert('11')
+      
       getRecommend().then((res) =>{
         console.log(res)
         if(res.code === ERR_ok){
           console.log('成功返回')
-          this.bannerList = res.data.radioList;
+          this.bannerList = res.data.slider;
         }
       }).catch((err) =>{
         console.log(err)
@@ -35,8 +37,7 @@ export default {
   },
   mounted(){
     this.getAjaxData();
-    // this.getFun();
-    // this.getFun();/
+    
   }
 }
 </script>
