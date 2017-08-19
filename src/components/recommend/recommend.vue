@@ -16,7 +16,7 @@
 </template>
 
 <script>
-import { getRecommend } from '@/api/recommend'
+import { getRecommend , getDiscList} from '@/api/recommend'
 import { ERR_ok } from '@/api/config'
 import VSlider from '@/base/slider/slider'
 export default {
@@ -27,25 +27,41 @@ export default {
       recommendList:[]
     }
   },
+  created(){
+      this._getAjaxData();
+      this._getDiscList();
+  },
   components:{
     VSlider
   },
   methods:{
-    getAjaxData(){
+    _getAjaxData(){
       
       getRecommend().then((res) =>{
-        console.log(res)
+        // console.log(res)
         if(res.code === ERR_ok){
-          console.log('成功返回')
+          // console.log('成功返回')
           this.recommendList = res.data.slider;
         }
       }).catch((err) =>{
         console.log(err)
       })
+    },
+    _getDiscList(){
+      
+        getDiscList().then((res)=>{
+          console.log(res)
+            if(res.code === ERR_ok){
+              console.log('1')
+              console.log(res.data.list)
+            }
+        }).catch((err)=>{
+          console.log(err)
+        })
     }
   },
   mounted(){
-    this.getAjaxData();
+    
     
   }
 }
