@@ -4,7 +4,7 @@ export const commonParams = {
     inCharset: 'utf-8',
     outCharset: 'utf-8',
     notice: 0,
-    formate: 'json'
+    format: 'jsonp'
 
 }
 
