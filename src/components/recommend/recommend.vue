@@ -1,18 +1,18 @@
 <template>
   <div class="recommend">
     <!-- banner -->
-    <scroll class="recommend_content" :data="discList">
+    <scroll ref="scroll" class="recommend_content" :data="discList">
    
       <div>
         <div v-if="recommendList.length" class="slider_wrapper">
             <v-slider>
                 <div v-for="(item,index) in recommendList" :key="index">
                     <a :href="item.linkUrl">
-                      <img :src="item.picUrl" />
+                      <img class="needsclick" @load="_onloadImage" :src="item.picUrl" />
                     </a>               
                 </div>
             </v-slider>
-        </div>
+      </div>
     
     
     <!-- 歌单推荐 -->
@@ -21,7 +21,7 @@
           <ul>
             <li v-for="(item,index) in discList" class="item">
               <div class="icon">
-                <img style="{width:60px;height:60px;}" :src="item.imgurl" />
+                <img style="{width:60px;height:60px;}" v-lazy="item.imgurl" />
               </div>
               <div class="text">
                 <h2 class="name">{{item.creator.name}}</h2>
@@ -30,8 +30,11 @@
 
             </li>
           </ul>
-        </div> 
-
+        </div>
+      </div>
+      <!-- 加载中 -->
+      <div class="loading_container" v-show="!discList.length">
+          <v-loading></v-loading>
       </div>
     </scroll>
   </div>
@@ -42,6 +45,7 @@ import { getRecommend , getDiscList} from '@/api/recommend'
 import { ERR_ok } from '@/api/config'
 import VSlider from '@/base/slider/slider'
 import Scroll from '@/base/scroll/scroll'
+import VLoading from '@/base/loading/loading'
 export default {
   name: 'recommend',
   data () {
@@ -52,12 +56,19 @@ export default {
     }
   },
   created(){
+    //  setTimeout(()=>{
+
+    //   },1000)
       this._getAjaxData();
-      this._getDiscList();
+      // setTimeout(() =>{
+
+        this._getDiscList();
+      // },2000)
   },
   components:{
     VSlider,
-    Scroll
+    Scroll,
+    VLoading
   },
   methods:{
     _getAjaxData(){
@@ -77,17 +88,21 @@ export default {
         getDiscList().then((res)=>{
           console.log(res)
             if(res.code === ERR_ok){
-              
               console.log(res.data.list)
               this.discList = res.data.list;
             }
         }).catch((err)=>{
           console.log(err)
         })
+    },
+    _onloadImage(){ //防止异步加载图片缓慢scroll组件无法监听到高度导致滚动不到底部
+      if(!this.loaded){
+        this.loaded = true;
+        this.$refs.scroll.refresh()
+      }
     }
   },
   mounted(){
-    
     
   }
 }

@@ -45,20 +45,21 @@ export default{
                     click:this.click
                 })
             }
+        },
+        enable(){
+        this.scroll && this.scroll.enable();
+        },
+        disable(){
+            this.scroll && this.scroll.disable();
+        },
+        refresh(){
+            this.scroll && this.scroll.refresh();
         }
     },
-    enable(){
-        this.scroll && this.scroll.enable();
-    },
-    disable(){
-        this.scroll && this.scroll.disable();
-    },
-    refresh(){
-        this.scroll && this.scroll.refresh();
-    },
+   
     watch: {
         data(){
-            alert(2)
+            
             setTimeout(()=>{
                 this.scroll.refresh();
             },20)

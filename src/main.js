@@ -5,10 +5,18 @@ import Vue from 'vue'
 import App from './App'
 import router from './router'
 import axios from 'axios'
+import VueLazyload from 'vue-lazyload'  //图片懒加载---源码了解
 
 import fastclick from 'fastclick' //引入fastclick
 Vue.config.productionTip = false
 
+Vue.use(VueLazyload)
+Vue.use(VueLazyload, {
+  preLoad: 1.3,
+  error: 'dist/error.png',
+  loading: require('@/assets/logo.png'),
+  attempt: 1
+})
 
 
 fastclick.attach(document.body) //设置到body！移动端的300ms延迟消失
