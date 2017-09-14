@@ -17,3 +17,21 @@ export function hasClass(el,className){
     let reg = new RegExp('(^|\\s)' + className + '(\\s|$)')
     return reg.test(el.className)
 }
+
+
+/*
+获取属性值
+el:元素
+key:属性
+value:属性值
+当有value的时候则是赋值的意思
+*/ 
+export function getAttr(el,key,value){
+    const name = 'data-' + key
+    if(value){
+        return el.setAttribute(name,value)
+       
+    }else{
+        return el.getAttribute(name)
+    }
+}

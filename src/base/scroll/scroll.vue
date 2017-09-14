@@ -12,6 +12,10 @@ import BScroll from 'better-scroll'
 export default{
     props:{
         probeType:{ //当为1时候，会在屏幕滚动停止的时候派发scroll事件
+        /* 当 probeType 为 1 的时候，会非实时（屏幕滑动超过一定时间后）派发scroll 事件；
+        当 probeType 为 2 的时候，会在屏幕滑动的过程中实时的派发 scroll 事件；
+        当 probeType 为 3 的时候，不仅在屏幕滑动的过程中，而且在 momentum 滚动动画运行过程中实时派发 scroll 事件。
+        */
             type:Number,
             default:1
         },
@@ -22,6 +26,10 @@ export default{
         data:{
             type:Array,
             default:null
+        },
+        listenScroll: {  //是否实时监听beeter-scroll的滚动事件，默认不监听
+            type: Boolean,
+            defautl: false
         }
     },
     data(){
@@ -45,6 +53,15 @@ export default{
                     click:this.click
                 })
             }
+            // 如果为要监听滚动事件，则触发当前实例上面的事件，也可以传入参数！
+            if(this.listenScroll){
+                let _this = this;
+                this.scroll.on('scroll', (site) => {
+                    _this.$emit('scroll', site)
+                })
+            }
+
+
         },
         enable(){
         this.scroll && this.scroll.enable();
@@ -54,6 +71,12 @@ export default{
         },
         refresh(){
             this.scroll && this.scroll.refresh();
+        },
+        scrollTo() {
+            this.scroll && this.scrollTo.apply(this.scroll, arguments)
+        },
+        scrollToElement() {
+            this.scroll && this.scroll.scrollToElement.apply(this.scroll, arguments)
         }
     },
    

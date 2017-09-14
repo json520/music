@@ -1,9 +1,17 @@
 <template>
   
-    <scroll :data="data" class="singerListView" >
+    <scroll 
+    @scroll="scroll"
+    :listen-scroll="listenScroll"
+    :probe-type="probeType"
+    :data="data"
+    class="singerListView"
+    ref="singerListView"
+    
+      >
 
         <ul>
-            <li class="list_group" v-for="(items,indexs) in data" :key="indexs">
+            <li class="list_group" v-for="(items,indexs) in data" :key="indexs" ref="listGroup">
                 <h2 class="list_group_title">{{items.title}}</h2>
                 <ul>
                     <li class="list_group_item" v-for="(item,index) in items.items" :key="index">
@@ -13,16 +21,46 @@
                 </ul>
             </li>
         </ul>
+        <div class="list_shortcur" @touchstart="onShortcurTouchStart" @touchmove="onShortcurTouchMove">
+            <ul>
+                <li v-for="(item,index) in letterList" :key="index" class="item"  
+                :data-index="index"
+                :class="{'current': currentIndex === index}"
+                >
+                    {{item}}        
+                </li>
+            </ul>
+        </div>
+        
 
     </scroll>
   
 </template>
 <script>
 import Scroll from '@/base/scroll/scroll'
+import { getAttr } from '@/common/js/dom'
+
+const LETTER_HEIGHT = 18
+
 export default {
   name: 'singerListView',
+   data(){
+      return {
+        scrollY: -1,
+        currentIndex: 0,
+        diff: -1
+      }
+  },
   components:{
       Scroll
+  },
+  created(){
+      this.touch = {};
+      this.listenScroll = true; //监听滚动事件
+      this.probeType = 3; //设置probeType为3则在滚动动画中监听滚动事件
+      //通过created创建对象！而不用data！因为data、props、computed都会在创建的变量里面添加set和ge用以监听数据对应dom的双向绑定！
+      //touch只是一个计数！不用监听！
+      this.listHeight = [] 
   },
   props:{
         data:{
@@ -30,13 +68,109 @@ export default {
             default: []
         }
   },
-  data(){
-      return {
+  computed: {
+    //   计算属性！通过传入的data进行处理获取右边的字母列表
+       letterList (){
+           return this.data.map((items) =>{
+               return items.title.substring(0, 1);
+
+           })
+       },
+       fixedTitle(){
+
+           if(this.scrollY > 0){
+               return ''
+           }
+           return this.data[this.currentIndex] ? this.data[this.currentIndex].title : ''
+       }
+
+  },
+ 
+  methods: {
+    //   监听touchStart事件，通过点击字母左边歌手滚动到对应的位置
+    onShortcurTouchStart(event){
+        let touchStartIndex = getAttr(event.target,'index')
+        let firstChild = event.touches[0];
+
+        this.touch.startIndex = touchStartIndex;
+        this.touch.touchStartLen = firstChild.pageY;
+
+        this._scrollTo(touchStartIndex)
+    },
+    onShortcurTouchMove(event){ //通过滚动字母左边歌手滚动到相应的位置
+    // 实现原理！通过touchstart和touchemove的y轴的距离！对比字母直接的阕值！滚动到相应的位置！
+        this.touch.touchMoveLen = event.touches[0].pageY;
+        let value = (this.touch.touchMoveLen - this.touch.touchStartLen) / LETTER_HEIGHT | 0;
+        let queValue = parseInt(this.touch.startIndex) + value;
+       
+        this._scrollTo(queValue)
+    },
+    scroll(site){ //获取滚动的y轴
+        this.scrollY = site.y;
+        // console.log(this.scrollY)
+    },
+    _scrollTo(index){ //？？？？？？？？？？？？？？不懂？？？？？？？？？？？？
+        if(!index && index !== 0){
+            return 
+        }
+        if(index < 0){
+            index = 0
+        } else if (index > this.listHeight.length - 2){
+            index = this.listHeight.length - 2
+        }
+        
+        this.scrollY = -this.listHeight[index];
+        this.$refs.singerListView.scrollToElement(this.$refs.listGroup[index], 0)
+    },
+    _calculateHeight(){ //计算歌手列表每个li距离顶部的高度
+        this.listHeight = [];
+        const list = this.$refs.listGroup;
+        let height = 0;
+        this.listHeight.push(height);
+        for(let value of list){
+            let liHeight = value.clientHeight;
+            height += liHeight;
+            this.listHeight.push(height)
+        }
+    },
+  },
+  watch: {
+    /*
+    数据监听
+        第一个参数是新值，
+        第二个参数是旧值
+    */   
+      data(){  //数据变化！重新计算li的高度
+          setTimeout(() =>{
+                this._calculateHeight();
+          },20)
+      },
+      scrollY(newY){ //监听滚动的数据
+      
+        const listHeight = this.listHeight;
+        //  滚动到顶部
+        if(newY > 0){
+            this.currentIndex = 0;
+            return 
+        }
+        // 滚动到中间
+        for(let i = 0; i < listHeight.length -1 ; i++){
+            let height1 = listHeight[i];
+            let height2 = listHeight[i+1];
+            if(-newY >= height1 && -newY < height2){
+                this.currentIndex = i;
+                this.diff = height2 + newY;
+                
+                return 
+            }       
+
+        }
+        // 滚动到底部,且-newY大于最后一个元素的上限
+        this.currentIndex = listHeight.length -2 
+      },
+      diff(newVal){
         
       }
-  },
-  created(){
-
   }
 }
 </script>
@@ -90,7 +224,7 @@ export default {
         font-family: Helvetica;
         .item{
             padding: 3px;
-            line-height:1px;
+            line-height:1;
             color: $color-text-l;
             font-size: $font-size-small;
             &.current{
