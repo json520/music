@@ -42,7 +42,7 @@
 
 <script>
 import { getRecommend , getDiscList} from '@/api/recommend'
-import { ERR_ok } from '@/api/config'
+import { ERR_OK } from '@/api/config'
 import VSlider from '@/base/slider/slider'
 import Scroll from '@/base/scroll/scroll'
 import VLoading from '@/base/loading/loading'
@@ -75,7 +75,7 @@ export default {
       
       getRecommend().then((res) =>{
         // console.log(res)
-        if(res.code === ERR_ok){
+        if(res.code === ERR_OK){
           // console.log('成功返回')
           this.recommendList = res.data.slider;
         }
@@ -87,7 +87,7 @@ export default {
       
         getDiscList().then((res)=>{
           console.log(res)
-            if(res.code === ERR_ok){
+            if(res.code === ERR_OK){
               console.log(res.data.list)
               this.discList = res.data.list;
             }

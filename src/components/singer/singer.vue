@@ -1,17 +1,18 @@
 <template>
   <div class="singer">
     <!-- 滚动列表 -->
-    <v-singer-list-view :data="singerList"></v-singer-list-view>
-
+    <v-singer-list-view @select="selectSinger" :data="singerList"></v-singer-list-view>
+      <router-view></router-view>  
   </div>
 </template>
 
 <script>
 
 import { getSingerList } from '@/api/singer'
-import { ERR_ok } from '@/api/config'
+import { ERR_OK } from '@/api/config'
 import Singer from '@/common/js/singer'
 import VSingerListView from '@/base/singerListView/singerListView'
+import {mapMutations} from 'vuex'
 
 const HOST_SINGER_LEN = 10;
 const HOST_SINGER_NAME = '热门'
@@ -31,12 +32,21 @@ export default {
     this._getAjaxSinger();
   },
   methods: {
+    selectSinger(singer){
+      // console.log(singer)
+      this.$router.push({
+        path: `/singer/${singer.id}`
+      })
+      // 把singer对象放入state状态管理里面
+      this.setSinger(singer)
+
+    },
     _getAjaxSinger(){
         getSingerList().then((res) =>{
-          if(res.code === ERR_ok){
-              console.log(res)
+          if(res.code === ERR_OK){
+              // console.log(res)
               this.singerList = this._formateSingerList(res.data.list);
-              console.log(this.singerList)
+              // console.log(this.singerList)
         }
           
         }).catch((err) =>{
@@ -102,7 +112,10 @@ export default {
         })
 
           return hotList.concat(singerList)
-    }
+    },
+    ...mapMutations({
+      setSinger: 'SET_SINGER'
+    })
   }
 }
 </script>

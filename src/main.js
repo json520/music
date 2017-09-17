@@ -4,10 +4,13 @@ import 'babel-polyfill'　//引入转义ES6的API语法
 import Vue from 'vue'
 import App from './App'
 import router from './router'
-import axios from 'axios'
+// import axios from 'axios'
 import VueLazyload from 'vue-lazyload'  //图片懒加载---源码了解
 
 import fastclick from 'fastclick' //引入fastclick
+
+import store from './store'
+
 Vue.config.productionTip = false
 
 Vue.use(VueLazyload)
@@ -25,5 +28,6 @@ new Vue({
   el: '#app',
   router,
   template: '<App/>',
-  components: { App }
+  components: { App },
+  store
 })

@@ -9,12 +9,11 @@
     ref="singerListView"
     
       >
-
         <ul>
-            <li class="list_group" v-for="(items,indexs) in data" :key="indexs" ref="listGroup">
+            <li class="list_group"  v-for="(items,indexs) in data" :key="indexs" ref="listGroup">
                 <h2 class="list_group_title">{{items.title}}</h2>
                 <ul>
-                    <li class="list_group_item" v-for="(item,index) in items.items" :key="index">
+                    <li class="list_group_item" @click="selectItem(item)" v-for="(item,index) in items.items" :key="index">
                         <img class="avatar" :src="item.avatar" alt="" />
                         <span class="name">{{item.name}}</span>
                     </li>
@@ -31,7 +30,14 @@
                 </li>
             </ul>
         </div>
-        
+
+        <!--歌手列表顶部  -->
+        <div class="list_fixed" ref="fixed" v-show="fixedTitle">
+            <div class="fixed_title">{{fixedTitle}}</div>
+        </div>
+        <div class="loading_container" v-show="!data.length">
+            <loading></loading>
+        </div>
 
     </scroll>
   
@@ -39,7 +45,11 @@
 <script>
 import Scroll from '@/base/scroll/scroll'
 import { getAttr } from '@/common/js/dom'
+import Loading from '@/base/loading/loading'
 
+// 歌手顶部列表标题的高度
+const TITLE_HEIGHT = 30
+// 字母列表元素高度
 const LETTER_HEIGHT = 18
 
 export default {
@@ -52,7 +62,8 @@ export default {
       }
   },
   components:{
-      Scroll
+      Scroll,
+      Loading
   },
   created(){
       this.touch = {};
@@ -87,6 +98,9 @@ export default {
   },
  
   methods: {
+      selectItem(singer){ //事件派发出去！让使用这个组件的人进行操作！
+        this.$emit('select',singer)
+      },
     //   监听touchStart事件，通过点击字母左边歌手滚动到对应的位置
     onShortcurTouchStart(event){
         let touchStartIndex = getAttr(event.target,'index')
@@ -169,7 +183,13 @@ export default {
         this.currentIndex = listHeight.length -2 
       },
       diff(newVal){
-        
+        let fixedTop = (newVal > 0 && newVal < TITLE_HEIGHT) ? newVal - TITLE_HEIGHT : 0
+        if(this.fixedTop === fixedTop){
+            return
+        };
+        this.fixedTop = fixedTop;
+        this.$refs.fixed.style.transform = `translate3d(0,${fixedTop}px,0)`
+
       }
   }
 }

@@ -14,4 +14,4 @@ export const options = {
 }
 
 // 借口返回值
-export const ERR_ok = 0
+export const ERR_OK = 0
