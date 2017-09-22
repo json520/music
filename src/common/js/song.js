@@ -38,8 +38,9 @@ function filterSinger(singer){
     if(!singer){
         return ''
     }
+    
     singer.forEach((item) => {
-        ret.push(item)
+        ret.push(item.name)
     })
 
     return ret.join('/')
