@@ -24,7 +24,7 @@
         class="list"  ref="listBox"
         >
             <div class="song-list-wrapper">
-                <v-song-list :song-list="songList">
+                <v-song-list :song-list="songList" @select="selectItem">
 
                 </v-song-list>
             </div>
@@ -43,6 +43,7 @@ import VScroll from '@/base/scroll/scroll'
 import VSongList from '@/base/songList/songList'
 import VLoading from '@/base/loading/loading'
 import { prefixStyle } from '@/common/js/dom' //通过浏览器机制进行添加前缀！
+import {mapActions} from 'vuex'
 
 // 层滚到顶部停住！距离顶部的距离！
 const TRANSLATE_HEIGHT = 40; 
@@ -96,7 +97,17 @@ export default {
         scroll(site){
              this.scrollY = site.y;
              console.log(this.scrollY)
-        }
+        },
+        selectItem(item,index){ //点击歌曲列表播放
+       
+            this.selectPlay({
+                list: this.songList,
+                index
+            })
+        },
+        ...mapActions([
+            'selectPlay'
+        ])
     },
     watch: {
         // 监听scrollY的滚动给bg-layer层设置滑动样式

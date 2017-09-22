@@ -11,6 +11,9 @@ import VueLazyload from 'vue-lazyload'  //图片懒加载---源码了解
 import fastclick from 'fastclick' //引入fastclick
 
 import store from './store'
+// import 'common/sass/index'
+// import 'common/sass/index.scss'
+
 
 Vue.config.productionTip = false
 
