@@ -18,5 +18,5 @@ export const currentIndex = state => state.currentIndex
 // 由于最后的数据里面在计算属性里面！但是需要通过playList和currentIndex获取到对应的song
 
 export const currentSong = (state) => {
-  return state.playing[state.currentIndex] || {}
+  return state.playList[state.currentIndex] || {}
 }

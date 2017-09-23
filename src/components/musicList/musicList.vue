@@ -1,7 +1,7 @@
 <template>
     <div class="music-list">
         <div class="back" @click="back">
-            <i class="icon-back">返回</i>
+            <i class="icon-back icon-fanhui iconfont"></i>
         </div>
         <h1 class="title" v-html="title"></h1>
         <div class="bg-image" :style="styleBgImage" ref="bgImageBox">

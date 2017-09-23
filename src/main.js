@@ -12,7 +12,9 @@ import fastclick from 'fastclick' //引入fastclick
 
 import store from './store'
 // import 'common/sass/index'
-// import 'common/sass/index.scss'
+// import '@/common/sass/index.scss'
+import '@/common/font2/iconfont.css'
+
 
 
 Vue.config.productionTip = false

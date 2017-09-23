@@ -1,84 +1,100 @@
 <template>
-  <div class="player" v-if="playList">
-    <div class="normal-player" v-show="fullScreen">
-      
-      <div class="background">
-        <img :src="currentSong.image"  width="100%" height="100%" />
-      </div>
-      <div class="top">
-        <div class="back">返回
-          <i class="icon-back icon"></i>
+  <div class="player" v-if="playList.length > 0">
+    <transition name="normal"
+      @enter="enter"
+      @after-enter="afterEnter"
+      @leave="leave"
+      @after-leave="afterLeave"
+    >
+
+      <div class="normal-player" v-show="fullScreen">
+
+        <div class="background">
+          <img :src="currentSong.image" style="width:100%;height:100%;" />
         </div>
-        <h1 class="title"></h1>
-        <h2 class="subtitle"></h2>
-      </div>
-      <div class="middle">
-        <div class="middle-l">
-          <div class="cd-wrapper">
-            <div class="cd">
-              <img :src="currentSong.image" />
+        <div class="top">
+          <div class="back" @click="back">
+            <i class="icon-back icon iconfont icon-fanhui"></i>
+          </div>
+          <h1 class="title" v-html="currentSong.name"></h1>
+          <h2 class="subtitle" v-html="currentSong.singer"></h2>
+        </div>
+        <div class="middle">
+          <div class="middle-l">
+            <div class="cd-wrapper" ref="cdWrapper">
+              <div class="cd">
+                <img class="image" :src="currentSong.image" />
+              </div>
+            </div>
+          </div>
+          <div class="lyric-wrapper">
+            <div>
+              <p></p>
             </div>
           </div>
         </div>
-        <div class="lyric-wrapper">
-          <div>
-            <p></p>
+        <div class="bottom">
+          <!-- <div class="dot-wrapper">
+                  <span class="dot"></span>
+                  <span class="dot"></span>
+                </div> -->
+          <div class="progress-wrapper">
+            <span class="time time-l"></span>
+            <div class="progress-bar-wrapper">
+
+            </div>
+            <span class="time time-r"></span>
+          </div>
+          <div class="operators">
+            <div class="icon i-left iconfont icon-xunhuan">
+              <i></i>
+            </div>
+            <div class="icon i-left iconfont icon-shape">
+
+            </div>
+            <div class="icon i-center iconfont icon-kaishi">
+
+            </div>
+            <div class="icon i-right iconfont icon-shape icon-shape2">
+
+            </div>
+            <div class="icon i-right iconfont icon-xin1">
+
+            </div>
+
           </div>
         </div>
       </div>
-      <div class="bottom">
-        <div class="dot-wrapper">
-          <span class="dot"></span>
-          <span class="dot"></span>
+
+    </transition>
+    <transition name="mini">
+
+      <div class="mini-player" v-show="!fullScreen" @click="back">
+        <div class="icon">
+          <img :src="currentSong.image" style="width:40px;height:40px;" />
         </div>
-        <div class="progress-wrapper">
-          <span class="time time-l"></span>
-          <div class="progress-bar-wrapper">
-
-          </div>
-          <span class="time time-r"></span>
+        <div class="text">
+          <h2 class="name" v-html="currentSong.name"></h2>
+          <p class="desc" v-html="currentSong.singer"></p>
         </div>
-        <div class="operators">
-          <div class="icon i-left">
-            <i></i>
-          </div>
-          <div class="icon i-left">
-
-          </div>
-          <div class="icon i-center">
-
-          </div>
-          <div class="icon i-right">
-
-          </div>
-          <div class="icon i-right">
-          
-          </div>
-
+        <div class="control">
+          <i class="icon-mini iconfont icon-zanting"></i>
+        </div>
+        <div class="control">
+          <i class="icon-playlist iconfont icon-suiji"></i>
         </div>
       </div>
-    </div>
-    <div class="mini-player" v-show="!fullScreen">
-      <div class="icon">
-        <img :src="currentSong.image" />
-      </div>
-      <div class="text">
-        <h2 class="name"></h2>
-        <p class="desc"></p>
-      </div>
-      <div class="control"></div>
-      <div class="control">
-        <i class="icon-playlist"></i>
-      </div>
 
-    </div>
+    </transition>
+
   </div>
 </template>
 <script>
 
-import {mapGetters} from 'vuex'
+import { mapGetters, mapMutations } from 'vuex'
+import animations from 'create-keyframe-animation'
 
-
+console.log('animations', animations)
 export default {
   name: "player",
   data() {
@@ -92,6 +108,83 @@ export default {
       'playList',
       'currentSong'
     ])
+  },
+  methods: {
+    back() { //切换播放器全屏或min形
+      let togglePlayer = !this.fullScreen;
+      console.log('togglePlayer',togglePlayer)
+      this.setFullScreen(togglePlayer)
+      // 动画设置有问题
+    },
+    open() {
+      // alert(1)
+      // this.setFullScreen(true)
+    },
+    enter(el, done) {
+      //el是dom元素！done是完成后
+      /*
+      当只用 JavaScript 过渡的时候， 在 enter 和 leave 中，回调函数 done 是必须的 。
+      否则他们会被同步调用，过渡会立刻完成
+      */
+      const { x, y, scale } = this.getSiteAndScale();
+      console.log(x,y,scale)
+      // 定义动画
+      let animation = {
+        0: {
+          transform: `translate3d(${x}px,${y}px,scale(${scale}))`
+        },
+        60: {
+          transform: `translate3d(0,0,0,scale(1.1))`
+        },
+        100: {
+          transfrom: `translate3d(0,0,0,scale(1))`
+        }
+      }
+
+      animations.registerAnimation({ //注册动画
+        name: 'move',
+        animation,
+        presets: {
+          duration: 400,
+          easing: 'linear'
+        }
+      })
+
+      animations.runAnimation(this.$refs.cdWrapper, 'move', done)
+    },
+    afterEnter() {
+
+      animations.unregisterAnimation('move');  //注销动画
+      this.$refs.cdWrapper.style.animation = ''
+    },
+    leave(el, done) {
+
+    },
+    afterLeave() {
+
+    },
+    getSiteAndScale() { //获取mini到normal的时候normal的最终位置
+      const miniCDWidth = 40;
+      const miniCDLeft = 40;
+      const miniCDBottom = 30;
+      const normalCDTop = 80;
+      const normalWidth = window.innerWidth * 0.8;
+      const scale = miniCDWidth / normalWidth;
+      const x = - (window.innerWidth / 2 - miniCDLeft);
+      const y = window.innerHeight - normalCDTop - normalWidth / 2 - miniCDBottom;
+      return {
+        x,
+        y,
+        scale
+      }
+
+    },
+    ...mapMutations({
+      setFullScreen: 'SET_FULL_SCREEN'
+    })
+  },
+  mounted() {
+
   }
 }
 </script>
@@ -108,6 +201,26 @@ export default {
     bottom: 0;
     z-index: 150;
     background: $color-background;
+    // &.normal-enter-acitve,
+    // &.normal-leave-active {
+    //   transition: all 0.4s;
+    //   .top,
+    //   .bottom {
+    //     // 贝塞尔曲线
+    //     // transition: all 0.4s cubic-bezier(0.86, 0.18, 0.82, 1.32);
+    //     transition: all 0.4s cubic-bezier(0.86, 0.18, 0.82, 1.32);
+    //   }
+    // }
+    // &.normal-enter,
+    // &.normal-leave-to {
+    //   opacity: 0;
+    //   .top {
+    //     transform: translate3d(0, -100px, 0);
+    //   }
+    //   .bottom {
+    //     transform: translate3d(0, 100px, 0);
+    //   }
+    // }
     .background {
       position: absolute;
       left: 0;
@@ -174,15 +287,15 @@ export default {
             width: 100%;
             height: 100%;
             box-sizing: border-box;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            border: 10px solid rgba(255, 255, 255, 0.1);
             border-radius: 50%;
-            &.play{
+            &.play {
               animation: rotate 20s liner infinite
             }
-            &.pause{
+            &.pause {
               animation: rotate 20s liner infinite
             }
-            .image{
+            .image {
               position: absolute;
               left: 0;
               top: 0;
@@ -192,48 +305,48 @@ export default {
             }
           }
         }
-        .playing-lyric-wrapper{
+        .playing-lyric-wrapper {
           width: 80%;
           margin: 30px auto 0 auto;
           overflow: hidden;
           text-align: center;
-          .playing-lyric{
+          .playing-lyric {
             height: 20px;
             font-size: $font-size-medium;
             color: $color-text-l;
           }
         }
       }
-      .middle-r{
+      .middle-r {
         display: inline-block;
         vertical-align: top;
         width: 100%;
         height: 100%;
         overflow: hidden;
-        .lyric-wrapper{
+        .lyric-wrapper {
           width: 80%;
           margin: 0 auto;
           overflow: hidden;
           text-align: center;
-          .text{
+          .text {
             line-height: 32px;
             color: $color-text-l;
             font-size: $font-size-medium;
-            &.current{
-              color: $color-text;  
+            &.current {
+              color: $color-text;
             }
           }
         }
       }
     }
-    .bottom{
+    .bottom {
       position: absolute;
       bottom: 50px;
       width: 100%;
-      .dot-wrapper{
+      .dot-wrapper {
         text-align: center;
         font-size: 0;
-        .dot{
+        .dot {
           display: inline-block;
           vertical-align: middle;
           margin: 0 4px;
@@ -241,134 +354,152 @@ export default {
           height: 8px;
           border-radius: 50%;
           background: $color-text-l;
-          &.active{
+          &.active {
             width: 20px;
             border-radius: 5px;
             background: $color-text-ll;
           }
         }
       }
-      .progress-wrapper{
+      .progress-wrapper {
         display: flex;
         align-items: center;
         width: 80%;
         margin: 0px auto;
         padding: 10px 0;
-        .time{
+        .time {
           color: $color-text;
           font-size: $font-size-small;
           flex: 0 0 30px;
           line-height: 30px;
           width: 30px;
-          &.time-l{
+          &.time-l {
             text-align: left;
           }
-          &.time-r{
+          &.time-r {
             text-align: right;
           }
         }
-        .progress-bar-wrapper{
+        .progress-bar-wrapper {
           flex: 1;
         }
       }
-      .operators{
+      .operators {
         display: flex;
         align-items: center;
-        .icon{
+        .icon {
+          font-size: 30px;
           flex: 1;
           color: $color-theme;
-          &.disable{
+          &.disable {
             color: $color-theme-d;
           }
-          i{
+          i {
             font-size: 30px;
           }
         }
-        .i-left{
+        .i-left {
           text-align: right;
         }
-        .i-center{
+        .i-center {
           padding: 0 20px;
           text-align: center;
-          i{
+          i {
             font-size: 40px;
           }
         }
-        .i-right{
+        .i-right {
           text-align: left;
         }
-        .icon-favorite{
+        .icon-favorite {
           color: $color-sub-theme;
+        }
+        .icon-shape2 {
+          transform: rotate(-180deg) translateY(3px);
+          margin-right: 10px;
+          text-align: right;
+          vertical-align: middle;
         }
       }
     }
-    
   }
-  .mini-player{
+  .mini-player {
     display: flex;
     align-items: center;
     position: fixed;
     left: 0;
     bottom: 0;
-    z-index: 100%;
+    z-index: 101;
     width: 100%;
     height: 60px;
     background: $color-highlight-background;
-    .icon{
+    &.mini-enter-active,
+    &.mini-leave-active {
+      transition: all 0.4s;
+    }
+    &.mini-enter,
+    &.mini-leave-to {
+      opacity: 0;
+    }
+    .icon {
       flex: 0 0 40px;
       width: 40px;
       padding: 0 10px 0 20px;
-      img{
+      img {
         border-radius: 50%;
-        &.play{
-          animation: rotate 10s liner infinite;
+        &.play {
+          animation: rotate 10s linear infinite;
         }
-        &.pause{
+        &.pause {
           animation-play-state: paused;
         }
       }
     }
-    .text{
+    .text {
       display: flex;
       flex-direction: column;
       justify-content: center;
       flex: 1;
       line-height: 20px;
       overflow: hidden;
-      .name{
+      .name {
         margin-bottom: 2px;
         @include no-wrap;
         font-size: $font-size-medium;
         color: $color-text;
       }
-      .desc{
+      .desc {
         @include no-wrap;
         font-size: $font-size-small;
         color: $color-text-d;
       }
     }
-    .control{
+    .control {
       flex: 0 0 30px;
       width: 30px;
       padding: 0 10px;
-      .icon-play-mini, .icon-pause-mini, .icon-playlist{
+      .icon-play-mini,
+      .icon-pause-mini,
+      .icon-playlist {
         font-size: 30px;
         color: $color-theme-d;
       }
-      .icon-mini{
+      .icon-mini {
+        color: $color-theme-d;
         font-size: 32px;
         position: absolute;
-        left: 0;
-        top: 0;
+        right: 40px;
+        top: 10px;
       }
     }
   }
 }
-@keyframes rotate{
-  0%{
+
+@keyframes rotate {
+  0% {
     transform: rotate(0);
   }
-  100%{
+  100% {
     transform: rotate(360deg);
   }
 }
