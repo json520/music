@@ -7,7 +7,7 @@
       @after-leave="afterLeave"
     >
 
-      <div class="normal-player" v-show="fullScreen">
+      <div class="normal-player" v-show="fullScreen" ref="normalPlayer">
 
         <div class="background">
           <img :src="currentSong.image" style="width:100%;height:100%;" />
@@ -69,7 +69,7 @@
     </transition>
     <transition name="mini">
 
-      <div class="mini-player" v-show="!fullScreen" @click="back">
+      <div class="mini-player" v-show="!fullScreen" @click="open">
         <div class="icon">
           <img :src="currentSong.image" style="width:40px;height:40px;" />
         </div>
@@ -93,6 +93,8 @@
 
 import { mapGetters, mapMutations } from 'vuex'
 import animations from 'create-keyframe-animation'
+import {prefixStyle} from '@/common/js/dom'
+const transform = prefixStyle('transform')
 
 console.log('animations', animations)
 export default {
@@ -112,13 +114,17 @@ export default {
   methods: {
     back() { //切换播放器全屏或min形
       let togglePlayer = !this.fullScreen;
+      
       console.log('togglePlayer',togglePlayer)
-      this.setFullScreen(togglePlayer)
+      console.log(this.$refs.normalPlayer)
+      // this.$refs.normalPlayer.style.display = 'none'
+      this.setFullScreen(false)
+      
       // 动画设置有问题
     },
     open() {
       // alert(1)
-      // this.setFullScreen(true)
+      this.setFullScreen(true)
     },
     enter(el, done) {
       //el是dom元素！done是完成后
@@ -126,18 +132,19 @@ export default {
       当只用 JavaScript 过渡的时候， 在 enter 和 leave 中，回调函数 done 是必须的 。
       否则他们会被同步调用，过渡会立刻完成
       */
-      const { x, y, scale } = this.getSiteAndScale();
+      
+      const {x, y, scale } = this.getSiteAndScale();
       console.log(x,y,scale)
       // 定义动画
       let animation = {
         0: {
-          transform: `translate3d(${x}px,${y}px,scale(${scale}))`
+          transform: `translate3d(${x}px,${y}px,0) scale(${scale})`
         },
         60: {
-          transform: `translate3d(0,0,0,scale(1.1))`
+          transform: `translate3d(0,0,0) scale(1.1)`
         },
         100: {
-          transfrom: `translate3d(0,0,0,scale(1))`
+          transfrom: `translate3d(0,0,0) scale(1)`
         }
       }
 
@@ -158,10 +165,23 @@ export default {
       this.$refs.cdWrapper.style.animation = ''
     },
     leave(el, done) {
+      // 直接用js设置transition原路返回！不用在设置animations
+      /**
+       * 1.设置初始的transition
+       * 2.设置translate3d
+       * 3.当transition过渡完的时候执行done!
+       * **/ 
+      const {x,y,scale} = this.getSiteAndScale();
+      console.log(x,y,scale)
+      this.$refs.cdWrapper.style.transition = `all 0.4s`;
+      this.$refs.cdWrapper.style[transform] = `translate3d(${x}px,${y}px,0) scale(${scale})`;
+      this.$refs.cdWrapper.addEventListener('transitionend',done)
 
     },
     afterLeave() {
-
+      this.$refs.cdWrapper.style.transition = ''
+      this.$refs.cdWrapper.style[transform] = ''
+      // 设置cdWrapper的transition和transform为空
     },
     getSiteAndScale() { //获取mini到normal的时候normal的最终位置
       const miniCDWidth = 40;
@@ -201,26 +221,7 @@ export default {
     bottom: 0;
     z-index: 150;
     background: $color-background;
-    // &.normal-enter-acitve,
-    // &.normal-leave-active {
-    //   transition: all 0.4s;
-    //   .top,
-    //   .bottom {
-    //     // 贝塞尔曲线
-    //     // transition: all 0.4s cubic-bezier(0.86, 0.18, 0.82, 1.32);
-    //     transition: all 0.4s cubic-bezier(0.86, 0.18, 0.82, 1.32);
-    //   }
-    // }
-    // &.normal-enter,
-    // &.normal-leave-to {
-    //   opacity: 0;
-    //   .top {
-    //     transform: translate3d(0, -100px, 0);
-    //   }
-    //   .bottom {
-    //     transform: translate3d(0, 100px, 0);
-    //   }
-    // }
+    
     .background {
       position: absolute;
       left: 0;
@@ -420,6 +421,26 @@ export default {
           text-align: right;
           vertical-align: middle;
         }
+      }
+    }
+    &.normal-enter-active,
+    &.normal-leave-active {
+      transition: all 0.4s;
+      .top,.bottom {
+        // 贝塞尔曲线
+        // transition: all 0.4s cubic-bezier(0.86, 0.18, 0.82, 1.32);
+        transition: all 0.4s cubic-bezier(0.86, 0.18, 0.82, 1.32);
+        // -webkit-transition: all 0.4s cubic-bezier(0.86, 0.18, 0.82, 1.32);
+      }
+    }
+    &.normal-enter,
+    &.normal-leave-to {
+      opacity: 0;
+      .top {
+        transform: translate3d(0, -100px, 0);
+      }
+      .bottom {
+        transform: translate3d(0, 100px, 0);
       }
     }
   }
