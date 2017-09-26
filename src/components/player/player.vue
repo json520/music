@@ -1,11 +1,6 @@
 <template>
   <div class="player" v-if="playList.length > 0">
-    <transition name="normal"
-      @enter="enter"
-      @after-enter="afterEnter"
-      @leave="leave"
-      @after-leave="afterLeave"
-    >
+    <transition name="normal" @enter="enter" @after-enter="afterEnter" @leave="leave" @after-leave="afterLeave">
 
       <div class="normal-player" v-show="fullScreen" ref="normalPlayer">
 
@@ -22,7 +17,7 @@
         <div class="middle">
           <div class="middle-l">
             <div class="cd-wrapper" ref="cdWrapper">
-              <div class="cd">
+              <div class="cd" :class="rotateCD">
                 <img class="image" :src="currentSong.image" />
               </div>
             </div>
@@ -35,33 +30,40 @@
         </div>
         <div class="bottom">
           <!-- <div class="dot-wrapper">
-                  <span class="dot"></span>
-                  <span class="dot"></span>
-                </div> -->
+                      <span class="dot"></span>
+                      <span class="dot"></span>
+                    </div> -->
+          <!-- 进度条 -->
           <div class="progress-wrapper">
-            <span class="time time-l"></span>
+            <span class="time time-l">{{this.formatTime(currentTime)}}</span>
+            <!-- 进度条bar组件 -->
             <div class="progress-bar-wrapper">
-
+              <v-progress-bar :percent="percent" @progressChange="onProgessBarChange"></v-progress-bar>
             </div>
-            <span class="time time-r"></span>
+            <span class="time time-r">{{this.formatTime(currentSong.duration)}}</span>
           </div>
           <div class="operators">
-            <div class="icon i-left iconfont icon-xunhuan">
-              <i></i>
+            <!-- 循环模式 -->
+            <div class="icon i-left ">
+              <i class="iconfont icon-xunhuan"></i>
             </div>
-            <div class="icon i-left iconfont icon-shape">
+            <!-- 上一首 -->
+            <div class="icon i-left" @click="prev" :class="disableClass">
+              <i class="iconfont icon-shape"></i>
+            </div>
+            <!-- 播放暂停 -->
+            <div class="icon i-center" @click="toggle" :class="disableClass">
+              <i class=" iconfont" :class="toggleIcon"></i>
+            </div>
+            <!-- 下一首 -->
+            <div class="icon i-right iconfont icon-shape icon-shape2" @click="next" :class="disableClass">
 
             </div>
-            <div class="icon i-center iconfont icon-kaishi">
-
-            </div>
-            <div class="icon i-right iconfont icon-shape icon-shape2">
-
-            </div>
+            <!-- 喜欢 -->
             <div class="icon i-right iconfont icon-xin1">
 
             </div>
-
+            
           </div>
         </div>
       </div>
@@ -71,14 +73,14 @@
 
       <div class="mini-player" v-show="!fullScreen" @click="open">
         <div class="icon">
-          <img :src="currentSong.image" style="width:40px;height:40px;" />
+          <img :src="currentSong.image" :class="rotateCD" style="width:40px;height:40px;" />
         </div>
         <div class="text">
           <h2 class="name" v-html="currentSong.name"></h2>
           <p class="desc" v-html="currentSong.singer"></p>
         </div>
         <div class="control">
-          <i class="icon-mini iconfont icon-zanting"></i>
+          <i class="icon-mini iconfont icon-zanting" :class="toggleIcon" @click.stop="toggle"></i>
         </div>
         <div class="control">
           <i class="icon-playlist iconfont icon-suiji"></i>
@@ -86,6 +88,8 @@
       </div>
 
     </transition>
+    <!-- 音频 -->
+    <audio ref="audio" :src="currentSong.url" @canplay="songEndRead" @error="songError" @timeupdate="updateTime"></audio>
 
   </div>
 </template>
@@ -93,37 +97,51 @@
 
 import { mapGetters, mapMutations } from 'vuex'
 import animations from 'create-keyframe-animation'
-import {prefixStyle} from '@/common/js/dom'
+import { prefixStyle } from '@/common/js/dom'
+import VProgressBar from '@/base/progress-bar/progressBar'
 const transform = prefixStyle('transform')
 
-console.log('animations', animations)
 export default {
   name: "player",
   data() {
     return {
-
+      songRead: false,
+      currentTime: 0
     };
   },
+  components: {
+    VProgressBar
+  },
   computed: {
+    rotateCD() { //CD旋转
+      return this.playing ? 'play' : 'play pause'
+    },
+    toggleIcon() { //播放暂停图标
+      return this.playing ? 'icon-zanting' : 'icon-kaishi'
+    },
+    disableClass() { //没加载之前按钮现实灰色
+      return this.songRead ? '' : 'disable'
+    },
+    percent() {
+      return this.currentTime / this.currentSong.duration;
+    },
     ...mapGetters([
       'fullScreen',
       'playList',
-      'currentSong'
+      'currentSong',
+      'playing',
+      'currentIndex'
     ])
   },
   methods: {
     back() { //切换播放器全屏或min形
       let togglePlayer = !this.fullScreen;
-      
-      console.log('togglePlayer',togglePlayer)
-      console.log(this.$refs.normalPlayer)
-      // this.$refs.normalPlayer.style.display = 'none'
+      console.log('togglePlayer', togglePlayer)
       this.setFullScreen(false)
-      
-      // 动画设置有问题
+      // 动画设置有问题--解决！translate3d单次拼错
     },
     open() {
-      // alert(1)
+
       this.setFullScreen(true)
     },
     enter(el, done) {
@@ -132,9 +150,8 @@ export default {
       当只用 JavaScript 过渡的时候， 在 enter 和 leave 中，回调函数 done 是必须的 。
       否则他们会被同步调用，过渡会立刻完成
       */
-      
-      const {x, y, scale } = this.getSiteAndScale();
-      console.log(x,y,scale)
+
+      const { x, y, scale } = this.getSiteAndScale();
       // 定义动画
       let animation = {
         0: {
@@ -170,12 +187,11 @@ export default {
        * 1.设置初始的transition
        * 2.设置translate3d
        * 3.当transition过渡完的时候执行done!
-       * **/ 
-      const {x,y,scale} = this.getSiteAndScale();
-      console.log(x,y,scale)
+       * **/
+      const { x, y, scale } = this.getSiteAndScale();
       this.$refs.cdWrapper.style.transition = `all 0.4s`;
       this.$refs.cdWrapper.style[transform] = `translate3d(${x}px,${y}px,0) scale(${scale})`;
-      this.$refs.cdWrapper.addEventListener('transitionend',done)
+      this.$refs.cdWrapper.addEventListener('transitionend', done)
 
     },
     afterLeave() {
@@ -199,12 +215,89 @@ export default {
       }
 
     },
+    toggle() { //暂停播放切换
+
+      if (!this.songRead) {
+        return
+      }
+      this.setPlaying(!this.playing)
+    },
+    prev() { //上一首
+      if (!this.songRead) { //未缓冲不可切换上一首
+        return
+      }
+      let index = this.currentIndex - 1;
+      if (index < 0) {
+        index = this.playList.length - 1;
+      }
+      this.setCurrentIndex(index);
+      if (!this.playing) {
+        this.setPlaying(true)
+      }
+      this.songRead = false;
+    },
+    next() { //下一首
+
+      if (!this.songRead) { //未缓冲不可切换下一首
+        return
+      }
+      let index = this.currentIndex + 1;
+      if (index > this.playList.length - 1) {
+        index = 0;
+      }
+      this.setCurrentIndex(index)
+      if (!this.playing) {
+        this.setPlaying(true)
+      }
+
+      this.songRead = false;
+    },
+    songEndRead() { //音乐缓冲完成
+      this.songRead = true;
+    },
+    songError() { //音乐出现问题
+      this.songRead = true;
+    },
+    updateTime(e) {
+
+      this.currentTime = e.target.currentTime;
+    },
+    formatTime(time) { //格式化时间 03：02! m 和 s 要赋值
+      time = time | 0;
+      let m = time / 60 | 0;
+      m = m < 10 ? `0${m}` : m;
+      let s = (time % 60) | 0;
+      s = s < 10 ? `0${s}` : s;
+      return `${m}:${s}`
+    },
+    onProgessBarChange(percent) {
+      this.$refs.audio.currentTime = this.currentSong.duration * percent;
+      if(!this.playing){
+        this.toggle();
+      }
+    },
     ...mapMutations({
-      setFullScreen: 'SET_FULL_SCREEN'
+      setFullScreen: 'SET_FULL_SCREEN',
+      setPlaying: 'SET_PLAYING',
+      setCurrentIndex: 'SET_CURRENT_INDEX'
     })
   },
-  mounted() {
+  watch: {
+    currentSong() {
+      this.$nextTick(() => {
+        this.$refs.audio.play();
+      })
+    },
+    playing(newVal) {
 
+      this.$nextTick(() => { //等待DOM渲染完之后
+        const audio = this.$refs.audio;
+        newVal ? audio.play() : audio.pause()
+      })
+    }
+  },
+  mounted() {
+    console.log(this.currentSong)
   }
 }
 </script>
@@ -221,7 +314,7 @@ export default {
     bottom: 0;
     z-index: 150;
     background: $color-background;
-    
+
     .background {
       position: absolute;
       left: 0;
@@ -291,10 +384,10 @@ export default {
             border: 10px solid rgba(255, 255, 255, 0.1);
             border-radius: 50%;
             &.play {
-              animation: rotate 20s liner infinite
+              animation: rotate 20s linear infinite
             }
             &.pause {
-              animation: rotate 20s liner infinite
+              animation-play-state: paused;
             }
             .image {
               position: absolute;
@@ -426,11 +519,11 @@ export default {
     &.normal-enter-active,
     &.normal-leave-active {
       transition: all 0.4s;
-      .top,.bottom {
+      .top,
+      .bottom {
         // 贝塞尔曲线
         // transition: all 0.4s cubic-bezier(0.86, 0.18, 0.82, 1.32);
-        transition: all 0.4s cubic-bezier(0.86, 0.18, 0.82, 1.32);
-        // -webkit-transition: all 0.4s cubic-bezier(0.86, 0.18, 0.82, 1.32);
+        transition: all 0.4s cubic-bezier(0.86, 0.18, 0.82, 1.32); // -webkit-transition: all 0.4s cubic-bezier(0.86, 0.18, 0.82, 1.32);
       }
     }
     &.normal-enter,
