@@ -14,7 +14,7 @@ import store from './store'
 // import 'common/sass/index'
 // import '@/common/sass/index.scss'
 import '@/common/font2/iconfont.css'
-
+import '@/common/font3/iconfont.css'
 
 
 Vue.config.productionTip = false

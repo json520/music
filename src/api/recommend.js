@@ -15,7 +15,7 @@ export  function getRecommend(){
     return jsonp(url , data ,options)
 }
 
-export function getDiscList(){
+export function getDiscList(){ //通过代理
     const url = '/api/getDiscList'
 
     const data = Object.assign({},commonParams,{

@@ -39,10 +39,11 @@ export default {
     percent(newVal) {
       if(newVal >= 0 && !this.touch.initStart){ //错误在this.$refs.progressBar写成 this.refs.progressBar
         // 计算滚动的容器宽度 * 播放的百分比
-        console.log(2)
+        
         const progressWidth = this.$refs.progressBar.clientWidth - progressBtnWidth;
         const offsetWidth = newVal * progressWidth;
-        this._setProgressWidth(offsetWidth)
+        this._setProgressWidth(offsetWidth);
+        
       }
     }
   },
@@ -84,7 +85,10 @@ export default {
       },
       progressClick(e) { //点击移动进度条
       // e.offsetX 偏移量
-        this._setProgressWidth(e.offsetX);
+      const rect = this.$refs.progressBar.getBoundingClientRect();  //
+      const offsetWidth = e.pageX - rect.left;
+
+        this._setProgressWidth(offsetWidth);
         this._triggerPercent();
       }
   },
@@ -125,6 +129,7 @@ export default {
         border: 3px solid $color-text;
         border-radius: 50%;
         background: $color-theme;
+        
       }
     }
   }
