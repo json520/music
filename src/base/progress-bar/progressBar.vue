@@ -66,6 +66,8 @@ export default {
         const diffWidth = e.touches[0].pageX -  this.touch.startX;
         const offsetWidth = Math.min( this.$refs.progressBar.clientWidth - progressBtnWidth,Math.max(0,diffWidth + this.touch.progressX))
         this._setProgressWidth(offsetWidth)
+
+        
       },
       progressTouchEnd() {
         this.touch.initStart = false;

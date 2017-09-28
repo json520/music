@@ -1,7 +1,7 @@
 <template>
-  <div class="singer">
+  <div class="singer" ref="singer">
     <!-- 滚动列表 -->
-    <v-singer-list-view @select="selectSinger" :data="singerList"></v-singer-list-view>
+    <v-singer-list-view @select="selectSinger" :data="singerList" ref="singListView"></v-singer-list-view>
       <router-view></router-view>  
   </div>
 </template>
@@ -13,12 +13,16 @@ import { ERR_OK } from '@/api/config'
 import Singer from '@/common/js/singer'
 import VSingerListView from '@/base/singerListView/singerListView'
 import {mapMutations} from 'vuex'
+import {playListMixin} from '@/common/js/mixins'
 
 const HOST_SINGER_LEN = 10;
 const HOST_SINGER_NAME = '热门'
 
 export default {
   name: 'hello',
+  mixins:[
+    playListMixin
+  ],
   data () {
     return {
       msg: 'Welcome to Your Vue.js App',
@@ -32,6 +36,11 @@ export default {
     this._getAjaxSinger();
   },
   methods: {
+    handlePlayList(playList){
+      let bottom = playList.length > 0 ? '60px' : '';
+      this.$refs.singer.style.bottom = bottom;
+      this.$refs.singListView.refresh();
+    },
     selectSinger(singer){
       // console.log(singer)
       this.$router.push({

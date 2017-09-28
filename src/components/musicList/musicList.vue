@@ -44,7 +44,7 @@ import VSongList from '@/base/songList/songList'
 import VLoading from '@/base/loading/loading'
 import { prefixStyle } from '@/common/js/dom' //通过浏览器机制进行添加前缀！
 import {mapActions} from 'vuex'
-
+import {playListMixin} from '@/common/js/mixins'
 // 层滚到顶部停住！距离顶部的距离！
 const TRANSLATE_HEIGHT = 40; 
 
@@ -54,6 +54,9 @@ const backdrop = prefixStyle('backdrop-filter');
 console.log('transform', transform)
 console.log('backdrop',backdrop)
 export default {
+    mixins:[
+        playListMixin
+    ],
     data() {
         return {
             scrollY: ''
@@ -82,7 +85,6 @@ export default {
     computed: {
         styleBgImage() {
             return `background-image:url(${this.bgImage})`
-                
         }
     },
     created() {
@@ -91,6 +93,12 @@ export default {
         
     },
     methods: {
+        handlePlayList(playList){
+            const bottom = playList.length > 0 ? '60px' : '';
+            this.$refs.listBox.$el.style.bottom = bottom;
+            this.$refs.listBox.refresh();
+            
+        },
         back() {
             this.$router.back();
         },

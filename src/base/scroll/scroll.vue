@@ -9,6 +9,7 @@
 </template>
 <script>
 import BScroll from 'better-scroll'
+let ss = 1;
 export default{
     props:{
         probeType:{ //当为1时候，会在屏幕滚动停止的时候派发scroll事件
@@ -23,7 +24,7 @@ export default{
             type:Boolean,
             default:true
         },
-        data:{
+        data:{ //数据改变的时候刷新
             type:Array,
             default:null
         },
@@ -73,6 +74,8 @@ export default{
             this.scroll && this.scroll.refresh();
         },
         scrollTo() {
+            ss++
+            // console.log('scrollTo',ss)
             this.scroll && this.scrollTo.apply(this.scroll, arguments)
         },
         scrollToElement() {
@@ -84,7 +87,7 @@ export default{
         data(){
             
             setTimeout(()=>{
-                this.scroll.refresh();
+                this.refresh();
             },20)
         }
     }
