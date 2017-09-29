@@ -7,6 +7,8 @@ import VRecommend from '@/components/recommend/recommend'
 import VSearch from '@/components/search/search'
 import VSinger from '@/components/singer/singer'
 import VSingerDetail from '@/components/singerDetail/singerDetail'
+import VDescr from '@/components/desc/desc'
+import VTopList from '@/components/topList/topList'
 
 Vue.use(Router)
 
@@ -20,7 +22,13 @@ export default new Router({
     {
       path: '/recommend',
       name: '推荐',
-      component: VRecommend
+      component: VRecommend,
+      children:[
+        {
+          path: ':id',
+          component: VDescr
+        }
+      ]
     },
     {
       path: '/singer',
@@ -41,7 +49,13 @@ export default new Router({
     {
       path: '/rank',
       name : '排行榜',
-      component: VRank
+      component: VRank,
+      children:[
+        {
+          path: ':id',
+          component: VTopList
+        }
+      ]
     }
     
   ]

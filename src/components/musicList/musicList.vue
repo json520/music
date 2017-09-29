@@ -24,7 +24,7 @@
         class="list"  ref="listBox"
         >
             <div class="song-list-wrapper">
-                <v-song-list :song-list="songList" @select="selectItem">
+                <v-song-list :song-list="songList" @select="selectItem" :rank="rank">
 
                 </v-song-list>
             </div>
@@ -51,8 +51,8 @@ const TRANSLATE_HEIGHT = 40;
 const transform = prefixStyle('transform');
 const backdrop = prefixStyle('backdrop-filter');
 
-console.log('transform', transform)
-console.log('backdrop',backdrop)
+// // console.log('transform', transform)
+// console.log('backdrop',backdrop)
 export default {
     mixins:[
         playListMixin
@@ -79,6 +79,10 @@ export default {
         bgImage: {
             type: String,
             default: ''
+        },
+        rank:{
+            type: Boolean,
+            default: false
         }
 
     },

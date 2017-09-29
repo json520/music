@@ -1,63 +1,133 @@
 <template>
-  <div class="hello">
-    排行榜
-    
+  <div class="rank" ref="rank">
+    <v-scroll class="toplist" :data="rankList" ref="toplist">
+      <ul>
+        <li class="item" v-for="(items,indexs) in rankList" :key="indexs" @click="selectItem(items)">
+          <div class="icon">
+            <img v-lazy="items.picUrl" />
+          </div>
+          <ul class="songlist">
+            <li class="song" v-for="(item,index) in items.songList" :key="index">
+              <span>{{index + 1}}</span>
+              <span>{{item.songname}}--{{item.singername}}</span>
+            </li>
+          </ul>
+        </li>
+      </ul>
+      <div class="loading-container" v-show="!rankList.length">
+        <v-loading></v-loading>
+      </div>
+    </v-scroll>
+    <router-view></router-view>
   </div>
 </template>
 
 <script>
-import axios from 'axios'
+import { getTopList } from '@/api/rank'
+import { ERR_OK } from '@/api/config'
+import VScroll from '@/base/scroll/scroll'
+import VLoading from '@/base/loading/loading'
+import {mapMutations} from 'vuex'
+import {playListMixin} from '@/common/js/mixins'
+
 export default {
   name: 'hello',
-  data () {
+  mixins:[
+    playListMixin
+  ],
+  data() {
     return {
-      msg: 'Welcome to Your Vue.js App'
+      msg: 'Welcome to Your Vue.js App',
+      rankList: []
     }
   },
-  created(){
-    // this.getFun();
+  components:{
+    VScroll,
+    VLoading
   },
-  methods:{
-    getFun(){
-     axios.get('https://c.y.qq.com/musichall/fcgi-bin/fcg_yqqhomepagerecommend.fcg?g_tk=5381&uin=0&format=json&inCharset=utf-8&outCharset=utf-8&notice=0&platform=h5&needNewCode=1&_=1500794924115',{
-       params : {
+  created() {
+    this._getTopList();
+  },
+  methods: {
+    handlePlayList(playList) {
+      let bottom = playList.length > 0 ? '60px' : '';
+      this.$refs.rank.style.bottom = bottom;
+      this.$refs.toplist.refresh();
+    },
+    _getTopList() {
+      getTopList().then((res) => {
+        if (res.code === ERR_OK) {
+            this.rankList = res.data.topList;
+          // console.log(res.data)
+        }
+      }).catch((err) => {
 
-       }
-     })
-     .then((res) =>{
-       console.log(res)
-     })
-     .catch((err) =>{
-       console.log(err)
-     })
-    }
-  },
-  mounted(){
-    // this.getFun()
-    // alert(1)
-    // this.getFun();
-    // this.getFun();/
+      })
+    },
+    selectItem(items){
+      this.$router.push({
+        path: `/rank/${items.id}`
+      })
+      this.setTopList(items)
+    },
+    ...mapMutations({
+      setTopList: 'SET_TOP_LIST'
+    })
+
   }
 }
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped>
-h1, h2 {
-  font-weight: normal;
-}
+<style scoped lang="scss">
 
-ul {
-  list-style-type: none;
-  padding: 0;
-}
-
-li {
-  display: inline-block;
-  margin: 0 10px;
-}
-
-a {
-  color: #42b983;
+@import '~common/sass/variable';
+@import '~common/sass/mixin';
+.rank {
+  position: fixed;
+  width: 100%;
+  top: 88px;
+  bottom: 0;
+  background: $color-highlight-background;
+  .toplist {
+    height: 100%;
+    overflow: hidden;
+    .item{
+      display: flex;
+      margin: 0 20px;
+      padding-top: 20px;
+      height: 100px;
+      &:last-child{
+        padding-bottom: 20px;
+      }
+      .icon{
+        flex: 0 0 100px;
+        width: 100px;
+        height: 100px;
+      }
+      .songlist{
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content:center;
+        padding: 0 20px; 
+        height: 100px;
+        overflow: hidden;
+        background: $color-highlight-background;
+        color: $color-text-d;
+        font-size: $font-size-small;
+        .song{
+          @include no-wrap();
+          line-height: 26px;
+        }
+      }
+    }
+    .loading-container{
+      position: absolute;
+      width: 100%;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+  }
 }
 </style>

@@ -12,3 +12,7 @@ export const SET_SEQUENCE_LIST = 'SET_SEQUENCE_LIST' //顺序播放
 export const SET_MODE = 'SET_MODE' //播放状态
 
 export const SET_CURRENT_INDEX = 'SET_CURRENT_INDEX' //当前播放音乐下标
+
+export const SET_DESC = 'SET_DESC' //推荐页面详情页的数据详情
+
+export const SET_TOP_LIST = 'SET_TOP_LIST' // 排行榜的歌曲文件

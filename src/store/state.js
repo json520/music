@@ -18,7 +18,9 @@ const state = {
     playList: [],
     sequenceList: [],
     mode: playMode.sequence,
-    currentIndex: -1
+    currentIndex: -1,
+    desc:{},
+    topList:{} //排行榜歌曲详情页
 }
 
 export default state
