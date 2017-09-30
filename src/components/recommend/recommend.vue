@@ -131,7 +131,7 @@ export default {
 @import "~common/sass/variable.scss";
 
 .recommend {
-  background: #212F3D;
+  background: $color-highlight-background;
   position: fixed;
   width: 100%;
   top: 88px;

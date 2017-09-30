@@ -30,7 +30,7 @@ export default {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-  background: #212F3D;
+  
   color: white;
   width: 100%;
   height: 100%;
@@ -40,10 +40,12 @@ body {
   margin: 0;
   width: 100%;
   height: 100%;
+  background: #222;
 }
 
 .appImg {
   width: 100px;
+  height:44px;
   margin: 0 auto;
 }
 </style>

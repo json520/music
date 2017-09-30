@@ -54,7 +54,7 @@ export function createSong(musicData){
    
 }
 // 过滤对象为数组
-function filterSinger(singer){
+export function filterSinger(singer){
     let ret = []
     if(!singer){
         return ''
