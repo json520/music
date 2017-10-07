@@ -9,6 +9,7 @@
  * 7. 当前播放的音乐id
  **/
 import { playMode } from '@/common/js/config'
+import {loadSearch} from '@/common/js/cache'
 
 // 只保留最基础的数据！有能被基础数据计算出来的数据不用放在里面！
 const state = {
@@ -20,7 +21,8 @@ const state = {
     mode: playMode.sequence,
     currentIndex: -1,
     desc:{},
-    topList:{} //排行榜歌曲详情页
+    topList:{}, //排行榜歌曲详情页
+    searchHistory:loadSearch()
 }
 
 export default state

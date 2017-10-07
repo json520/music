@@ -44,7 +44,13 @@ export default new Router({
     {
       path: '/search',
       name: '搜索',
-      component: VSearch
+      component: VSearch,
+      children:[
+        {
+          path: ':id',
+          component: VSingerDetail
+        }
+      ]
     },
     {
       path: '/rank',

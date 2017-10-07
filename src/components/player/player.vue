@@ -389,7 +389,7 @@ export default {
         if (this.playing) {
           this.currentLyric.play()
         }
-        console.log(this.currentLyric)
+        // console.log(this.currentLyric)
       }).catch((err) => {
         this.currentLyric = null
         this.playLyric = '';
@@ -398,12 +398,12 @@ export default {
     },
     hanlderPlyric({ lineNum, txt }) { //函数参数是个对象
       this.currentLineNum = lineNum;
-      console.log('lyric', lineNum)
+      // console.log('lyric', lineNum)
       if (lineNum > 5) {
         let currentElement = this.$refs.lyric[lineNum - 5];
         this.$refs.lyricList.scrollToElement(currentElement, 500)
       } else {
-        console.log('滚')
+        // console.log('滚')
         /***************  scrollTo出现问题   ***************/
         // this.$refs.lyricList.scrollTo(0, 0, 1000)
         let currentElement = this.$refs.lyric[0];
@@ -422,7 +422,7 @@ export default {
       this.touch.startY = touch.pageY;
     },
     middleTouchMove(e) {
-      console.log(1)
+      // console.log(1)
       /*
       1.当初始化的时候
       2.获取delta差值
@@ -455,7 +455,7 @@ export default {
       1.当this.currentShow为cd的时候只能向左滑动，滑动超过10%!则让滚动到左边！
       2.只能向右滑动的时候！滑动小于90%！则让滚动到右边！
       */
-      console.log('end')
+      // console.log('end')
       let offsetWidth = 0;
       let opacity = 0;
       if (this.currentShow === 'cd') {

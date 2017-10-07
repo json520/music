@@ -31,6 +31,14 @@ export default{
         listenScroll: {  //是否实时监听beeter-scroll的滚动事件，默认不监听
             type: Boolean,
             defautl: false
+        },
+        pullUp: {
+            type: Boolean,
+            default: false
+        },
+        beforeScrollStart: {
+            type: Boolean,
+            default: false
         }
     },
     data(){
@@ -59,6 +67,24 @@ export default{
                 let _this = this;
                 this.scroll.on('scroll', (site) => {
                     _this.$emit('scroll', site)
+                })
+            }
+
+            // 是否滚动加载
+            if(this.pullUp) {
+                
+                this.scroll.on('scrollEnd',() =>{
+                    
+                    if(this.scroll.y <= (this.scroll.maxScrollY + 50)){
+                        
+                       this.$emit('scrollToEnd')
+                    }
+                })
+            }
+            // 滾動之前
+            if(this.beforeScrollStart){ 
+                this.scroll.on('beforeScrollStart',() =>{
+                    this.$emit('beforScrollStart')
                 })
             }
 

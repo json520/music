@@ -1,11 +1,12 @@
 <template>
   <div class="search-box">
     <i class="icon-search icon-shape iconfont"></i>
-    <input class="box" type="text" v-model="query" :placeholder="placeholder">
+    <input class="box" ref="inputQuery" type="text" v-model="query" :placeholder="placeholder">
     <i class="icon-dismiss icon-xin iconfont" v-show="query" @click="clear"></i>
   </div>
 </template>
 <script>
+import {getBounce} from '@/common/js/utils'
 export default {
   name: "search-box",
   data() {
@@ -20,9 +21,9 @@ export default {
     }
   },
   created() {
-    this.$watch('query', (newVal, oldVal) => {
+    this.$watch('query', getBounce((newVal, oldVal) => { //通过截留函数减少输入的请求
       this.$emit('query', newVal)
-    })
+    },200))
   },
   methods: {
     clear() {
@@ -30,7 +31,11 @@ export default {
     },
     selectHotKey(query) {
       this.query = query
+    },
+    blur(){
+      this.$refs.inputQuery.blur();
     }
+
   }
 }
 </script>
@@ -54,6 +59,7 @@ export default {
     flex: 1;
     margin: 0 5px;
     line-height: 18px;
+    height:100%;
     background: $color-highlight-background;
     color: $color-text;
     font-size: $font-size-medium;
