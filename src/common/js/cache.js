@@ -10,6 +10,12 @@ import storage from 'good-storage'
 const SEARCH_KEY = '__search__'
 const SEARCH_MAX_LENGTH = 15
 
+const PLAY_KEY = '__play__' 
+const PLAY_HISTORY_LENGTH = 100
+
+const FAVORITE_KEY = '__favorite__'
+const FAVORITE_MAX_LENGTH = 200
+
 // 处理存储的数据
 function insertArray(arr, query, compare, max) {
   let index = arr.findIndex(compare);
@@ -71,4 +77,49 @@ export function deleteSearch(query) {
 export function clearSearch() {
   storage.remove(SEARCH_KEY)
   return []
+}
+
+// 最近播放列表
+/*
+1.获取本地数据
+2.插入到本地数据最前面
+3.重新存储到本地
+4.返回新的存储数组给vuex
+*/
+export function playHistory(song) {  
+  let storageBox = storage.get(PLAY_KEY,[])
+  insertArray(storageBox, song, (item) =>{
+    return item.id === song.id 
+  },PLAY_HISTORY_LENGTH)
+
+  storage.set(PLAY_KEY,storageBox);
+  return storageBox;
+}
+
+export function loadPlayHistory() { //获取最近播放列表
+  return storage.get(PLAY_KEY,[])
+}
+
+// 收藏歌曲列表
+export function saveFavoriteList(song) {
+  let songs = storage.get(FAVORITE_KEY,[])
+  insertArray(songs,song,(item)=>{
+    return song.id === item.id
+  },FAVORITE_MAX_LENGTH)
+
+  storage.set(FAVORITE_KEY,songs)
+  return songs;
+}
+// 删除收藏列表
+export function deleteFavoriteList(song) {
+  let songs = storage.get(FAVORITE_KEY,[])
+  deleteFormItem(songs,(item) =>{
+    return song.id === item.id
+  })
+  storage.set(FAVORITE_KEY,songs)
+  return songs
+}
+// 获取收藏列表
+export function loadFavoriteList() {
+  return storage.get(FAVORITE_KEY,[])
 }

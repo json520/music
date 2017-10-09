@@ -1,6 +1,7 @@
 <template>
   <div id="app">
-    <img class="appImg" src="./assets/logo1.png">
+    <!-- <img class="appImg" src="./assets/logo1.png"> -->
+    <v-my-header></v-my-header>
     <v-tab></v-tab>
     <keep-alive>
       <router-view></router-view>
@@ -11,6 +12,7 @@
 </template>
 
 <script>
+import VMyHeader from '@/components/myHeader/myHeader'
 import VTab from '@/components/tab/tab'
 import VPlayer from '@/components/player/player'
 
@@ -18,7 +20,8 @@ export default {
   name: 'app',
   components: {
     VTab,
-    VPlayer
+    VPlayer,
+    VMyHeader
   }
 }
 </script>

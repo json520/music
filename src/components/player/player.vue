@@ -25,7 +25,7 @@
               <div class="playing-lyric">{{playLyric}}</div>
             </div>
           </div>
-          <v-scroll class="middle-r" ref="lyricList" :data=" currentLyric && currentLyric.lines">
+          <v-scroll class="middle-r" ref="lyricList" :data="currentLyric && currentLyric.lines">
             <div class="lyric-wrapper">
               <div v-if="currentLyric">
                 <p ref="lyric" class="text" :class="{'current' : currentLineNum === index}" v-for="(line,index) in currentLyric.lines" :key="index">{{line.txt}}</p>
@@ -66,8 +66,8 @@
 
             </div>
             <!-- 喜欢 -->
-            <div class="icon i-right iconfont icon-xin1">
-
+            <div class="icon i-right  iconfont icon-xin" :class="getFavoriteIcon(currentSong)" @click="toggleFavorite(currentSong)">
+                  
             </div>
 
           </div>
@@ -93,24 +93,29 @@
 
           </v-progress-circle>
         </div>
-        <div class="control">
+        <div class="control" @click.stop="showPlayList">
           <i class="icon-playlist iconfont icon-suiji"></i>
         </div>
       </div>
 
     </transition>
-    <!-- 音频 -->
-    <audio ref="audio" :src="currentSong.url" @canplay="songEndRead" @error="songError" @timeupdate="updateTime" @ended="end"></audio>
+
+    <!-- 歌单列表 -->
+    <v-play-list ref="playList"></v-play-list>
+
+    <!-- 音频 把canplay事件改为play事件！解决在微信后台一秒延迟的问题 -->
+    <audio ref="audio" :src="currentSong.url" @play="songEndRead" @error="songError" @timeupdate="updateTime" @ended="end"></audio>
 
   </div>
 </template>
 <script>
 
-import { mapGetters, mapMutations } from 'vuex'
+import { mapGetters, mapMutations, mapActions } from 'vuex'
 import animations from 'create-keyframe-animation'
 import { prefixStyle } from '@/common/js/dom'
 import VProgressBar from '@/base/progress-bar/progressBar'
 import VProgressCircle from '@/base/progress-circle/progressCircle'
+import VPlayList from '@/components/playList/playList'
 import { playMode } from '@/common/js/config'
 import { shuffle } from '@/common/js/utils'
 import Lyric from 'lyric-parser'
@@ -134,7 +139,8 @@ export default {
   components: {
     VProgressBar,
     VProgressCircle,
-    VScroll
+    VScroll,
+    VPlayList
   },
   computed: {
     rotateCD() { //CD旋转
@@ -162,7 +168,8 @@ export default {
       'playing',
       'currentIndex',
       'mode',
-      'sequenceList'
+      'sequenceList',
+      'favoriteList'
     ])
   },
   created() {
@@ -283,6 +290,7 @@ export default {
     },
     end() {
       if (this.mode === playMode.loop) {
+
         this.loop()
       } else {
         this.next()
@@ -304,6 +312,7 @@ export default {
       }
       if (this.playList.length === 1) {
         this.loop();
+        return 
       } else {
         let index = this.currentIndex + 1;
         if (index > this.playList.length - 1) {
@@ -318,6 +327,9 @@ export default {
     },
     songEndRead() { //音乐缓冲完成
       this.songRead = true;
+      // 执行添加到最近播放列表
+      this.savePlayHistory(this.currentSong)
+
     },
     songError() { //音乐出现问题
       this.songRead = true;
@@ -384,7 +396,9 @@ export default {
     },
     getLyric() { //获取歌词
       this.currentSong.getLyric().then((lyric) => {
-
+        if(this.currentSong.lyric !== lyric) {
+          return 
+        }
         this.currentLyric = new Lyric(lyric, this.hanlderPlyric)
         if (this.playing) {
           this.currentLyric.play()
@@ -484,6 +498,33 @@ export default {
       this.$refs.middleL.style[transitionDuration] = `${time}ms`;
       this.touch.initiared = false;
     },
+    showPlayList() {
+      this.$refs.playList.show();
+    },
+     getFavoriteIcon(song){ //获取收藏的icon
+      if(this.isFavorite(song)) {
+        return 'icon-favorite'
+      }
+      return ''
+    },
+    toggleFavorite(song) { //切换收藏
+      if(this.isFavorite(song)) {
+        this.deleteFavorite(song)
+      }else{
+        this.saveFavorite(song)
+      }
+    },
+    isFavorite(song) { //是否收藏
+      const index = this.favoriteList.findIndex((item)=>{
+        return item.id === song.id
+      })
+      return index > -1
+    },
+    ...mapActions({
+      savePlayHistory: 'savePlayHistory',
+      saveFavorite: 'saveFavorite',
+      deleteFavorite: 'deleteFavorite'
+    }),
     ...mapMutations({
       setFullScreen: 'SET_FULL_SCREEN',
       setPlaying: 'SET_PLAYING',
@@ -494,21 +535,28 @@ export default {
   },
   watch: {
     currentSong(newVal, oldVal) {
+      if(!newVal.id){
+        return 
+      }
       if (newVal.id === oldVal.id) {
         return
       }
       if (this.currentLyric) {
         this.currentLyric.stop();
+        this.currentTime = 0
+        this.playLyric = ''
+        this.currentLineNum = 0
       }
       // this.$nextTick(() => {
       //   this.$refs.audio.play();
       //   this.getLyric();
       // }) 解决在微信打开！在后台js不执行！致使切换回界面的时候出现问题！
-
-     setTimeout(() => {
+      clearTimeout(this.timer)
+     this.timer = setTimeout(() => {
         this.$refs.audio.play();
         this.getLyric();
       },1000)
+
     },
     playing(newVal) {
       this.$nextTick(() => { //等待DOM渲染完之后
@@ -516,6 +564,8 @@ export default {
         newVal ? audio.play() : audio.pause()
       })
     }
+   
+
   },
   mounted() {
     // console.log(this.currentSong)

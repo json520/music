@@ -18,3 +18,7 @@ export const SET_DESC = 'SET_DESC' //推荐页面详情页的数据详情
 export const SET_TOP_LIST = 'SET_TOP_LIST' // 排行榜的歌曲文件
 
 export const SET_SEARCH_HISTORY = 'SET_SEARCH_HISTORY'
+
+export const SET_PLAY_HISTORY = 'SET_PLAY_HISTORY' //最近播放列表
+
+export const SET_FAVORITE_LIST = 'SET_FAVORITE_LIST' //收藏列表

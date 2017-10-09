@@ -2,7 +2,7 @@
 import * as types from './mutationsTypes'
 import { playMode } from '@/common/js/config'
 import { shuffle } from '@/common/js/utils'
-import { saveSearch, deleteSearch ,clearSearch} from '@/common/js/cache'
+import { saveSearch, deleteSearch ,clearSearch ,playHistory, saveFavoriteList, deleteFavoriteList} from '@/common/js/cache'
 function randomIndex(list, song) {
   return list.findIndex((item) => {
     return item.id === song.id
@@ -99,4 +99,53 @@ export const deleteSearchHistory = function ({commit, state}, query){
 
 export const clearSearchHistory = function ({commit, state}) {
   commit(types.SET_SEARCH_HISTORY, clearSearch())
+}
+
+// 删除歌曲
+export const deleteSong = function ({commit, state} ,song) {
+  let playList = state.playList.slice();
+  let sequenceList = state.sequenceList.slice();
+  let currentIndex = state.currentIndex;
+
+  let pIndex = randomIndex(playList,song);
+  playList.splice(pIndex, 1);
+  let sIndex = randomIndex(sequenceList, song);
+  sequenceList.splice(sIndex, 1)
+  
+
+  if(currentIndex > pIndex || currentIndex == playList.length){
+    currentIndex --
+  }
+
+  
+  commit(types.SET_PLAY_LIST, playList);
+  commit(types.SET_SEQUENCE_LIST, sequenceList);
+  commit(types.SET_CURRENT_INDEX, currentIndex);
+
+  if(!playList.length){
+    commit(types.SET_PLAY_LIST,false)
+  }else{
+    commit(types.SET_PLAY_LIST,true)
+  }
+
+}
+
+export const deleteSongList = function({commit, state}) {
+  commit(types.SET_CURRENT_INDEX,[]);
+  commit(types.SET_PLAY_LIST,[]);
+  commit(types.SET_CURRENT_INDEX, -1);
+  commit(types.SET_PLAYING, false);
+}
+
+export const savePlayHistory = function({commit, state}, song) {   //添加最近播放列表
+  commit(types.SET_PLAY_HISTORY,playHistory(song))
+}
+
+// 收藏歌曲列表
+export const saveFavorite = function({commit}, song) {
+  commit(types.SET_FAVORITE_LIST,saveFavoriteList(song))
+}
+// 删除收藏歌曲
+export const deleteFavorite = function ({commit}, song) {
+  commit(types.SET_FAVORITE_LIST,deleteFavoriteList(song))
 }

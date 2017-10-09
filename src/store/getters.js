@@ -26,3 +26,7 @@ export const desc = state => state.desc
 export const topList = state => state.topList
 
 export const searchHistory = state => state.searchHistory   //搜索記錄
+
+export const playHistory = state => state.playHistory  //最近播放列表
+
+export const favoriteList = state => state.favoriteList //收藏列表

@@ -6,7 +6,7 @@
     </div>
     <!-- 热门搜索 -->
     <div class="shortcut-wrapper" v-show="!query" ref="shortcurWraper">
-      <v-scroll class="shortcut" ref="shortcur" :data="shortcur" >
+      <v-scroll class="shortcut" ref="shortcur" :data="shortcur" :refreshDelay="refreshDelay">
         <div>
 
           <div class="hot-key" >
@@ -67,7 +67,8 @@ export default {
     return {
       msg: 'Welcome to Your Vue.js App',
       hotKeyList: [],
-      query: ''
+      query: '',
+      refreshDelay: 100
     }
   },
   computed: {

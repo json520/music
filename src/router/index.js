@@ -9,6 +9,7 @@ import VSinger from '@/components/singer/singer'
 import VSingerDetail from '@/components/singerDetail/singerDetail'
 import VDescr from '@/components/desc/desc'
 import VTopList from '@/components/topList/topList'
+import VUserCenter from '@/components/userCenter/userCenter'
 
 Vue.use(Router)
 
@@ -62,6 +63,11 @@ export default new Router({
           component: VTopList
         }
       ]
+    },
+    {
+      path: '/user',
+      name: '用户中心',
+      component: VUserCenter
     }
     
   ]

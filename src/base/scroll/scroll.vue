@@ -39,6 +39,11 @@ export default{
         beforeScrollStart: {
             type: Boolean,
             default: false
+        },
+        // 如果不能滚动可能是动画造成的DOM延迟没有渲染高度
+        refreshDelay: {
+            type: Number,
+            default: 20
         }
     },
     data(){
@@ -114,7 +119,7 @@ export default{
             
             setTimeout(()=>{
                 this.refresh();
-            },20)
+            },this.refreshDelay)
         }
     }
 }
