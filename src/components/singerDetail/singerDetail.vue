@@ -6,11 +6,13 @@
     </transition>
 </template>
 <script >
+
+import VMusicList from '@/components/musicList/musicList'
+
 import { mapGetters } from 'vuex'
 import { getSingerDetail } from '@/api/singer'
 import { createSong } from '@/common/js/song'
 import { ERR_OK } from '@/api/config'
-import VMusicList from '@/components/musicList/musicList'
 export default {
     name: 'singer-detail',
     data() {

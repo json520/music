@@ -8,11 +8,12 @@
 
 <script>
 
+import VSingerListView from '@/base/singerListView/singerListView'
+
+import {mapMutations} from 'vuex'
 import { getSingerList } from '@/api/singer'
 import { ERR_OK } from '@/api/config'
 import Singer from '@/common/js/singer'
-import VSingerListView from '@/base/singerListView/singerListView'
-import {mapMutations} from 'vuex'
 import {playListMixin} from '@/common/js/mixins'
 
 const HOST_SINGER_LEN = 10;

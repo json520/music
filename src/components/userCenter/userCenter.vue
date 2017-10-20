@@ -42,8 +42,9 @@ import VSwitches from '@/base/switches/switches'
 import VScroll from '@/base/scroll/scroll'
 import VSongList from '@/base/songList/songList'
 import VNoResult from '@/base/noResult/noResult'
-import Song from '@/common/js/song'
+
 import { mapGetters, mapActions } from 'vuex'
+import Song from '@/common/js/song'
 import { playListMixin } from '@/common/js/mixins'
 export default {
   name: "userCenter",

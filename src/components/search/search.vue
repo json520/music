@@ -49,15 +49,15 @@
 
 <script>
 import VSearchBox from '@/base/searchBox/searchBox';
-import { getHotKey } from '@/api/search'
 import VScroll from '@/base/scroll/scroll'
 import VSuggest from '@/components/suggest/suggest'
 import VSearchList from '@/base/searchList/searchList'
-import VNoResult from '@/base/noResult/noResult'
 import VConfirm from '@/base/confirm/confirm'
-import { ERR_OK } from '@/api/config'
+
 import { mapActions, mapGetters } from 'vuex'
 import { playListMixin } from '@/common/js/mixins'
+import { getHotKey } from '@/api/search'
+import { ERR_OK } from '@/api/config'
 export default {
   mixins:[
     playListMixin
@@ -82,7 +82,6 @@ export default {
   components: {
     VSearchBox,
     VSuggest,
-    VNoResult,
     VSearchList,
     VConfirm,
     VScroll

@@ -51,11 +51,14 @@
   </transition>
 </template>
 <script>
-import {mapGetters, mapMutations, mapActions} from 'vuex'
+
 import VScroll from '@/base/scroll/scroll'
 import VConfirm from '@/base/confirm/confirm'
 import VAddSong from '@/components/addSong/addSong'
+
+import {mapGetters, mapMutations, mapActions} from 'vuex'
 import {playMode} from '@/common/js/config'
+
 export default {
   name: "playList",
   data () {

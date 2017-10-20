@@ -21,7 +21,7 @@
               <v-song-list :songList="playHistory" @select="selectSong"></v-song-list>
             </div>
           </v-scroll>
-            <!-- 搜索历史 -->
+            <!-- 历史纪录 -->
           <v-scroll ref="searchList" class="list-scroll" :data="searchHistory" v-if="currentIndex === 1">
             <div class="list-inner">
               <v-search-list :searches="searchHistory" ></v-search-list>

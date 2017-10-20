@@ -110,16 +110,19 @@
 </template>
 <script>
 
-import { mapGetters, mapMutations, mapActions } from 'vuex'
-import animations from 'create-keyframe-animation'
-import { prefixStyle } from '@/common/js/dom'
 import VProgressBar from '@/base/progress-bar/progressBar'
 import VProgressCircle from '@/base/progress-circle/progressCircle'
 import VPlayList from '@/components/playList/playList'
+import VScroll from '@/base/scroll/scroll'
+
+import Lyric from 'lyric-parser'
+import animations from 'create-keyframe-animation'
+
+import { mapGetters, mapMutations, mapActions } from 'vuex'
 import { playMode } from '@/common/js/config'
 import { shuffle } from '@/common/js/utils'
-import Lyric from 'lyric-parser'
-import VScroll from '@/base/scroll/scroll'
+import { prefixStyle } from '@/common/js/dom'
+
 
 const transform = prefixStyle('transform')
 const transitionDuration = prefixStyle('transitionDuration')
@@ -581,7 +584,7 @@ export default {
     position: fixed;
     left: 0;
     right: 0;
-    toP: 0;
+    top: 0;
     bottom: 0;
     z-index: 150;
     background: $color-background;

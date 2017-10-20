@@ -41,13 +41,15 @@
 </template>
 
 <script>
-import { getRecommend, getDiscList } from '@/api/recommend'
-import { ERR_OK } from '@/api/config'
+
 import VSlider from '@/base/slider/slider'
 import Scroll from '@/base/scroll/scroll'
 import VLoading from '@/base/loading/loading'
-import { playListMixin } from '@/common/js/mixins'
+
 import { mapMutations } from 'vuex'
+import { getRecommend, getDiscList } from '@/api/recommend'
+import { ERR_OK } from '@/api/config'
+import { playListMixin } from '@/common/js/mixins'
 export default {
   name: 'recommend',
   data() {

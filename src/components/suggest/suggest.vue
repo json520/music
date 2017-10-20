@@ -26,16 +26,19 @@
   </v-scroll>
 </template>
 <script>
+
+
+import VScroll from '@/base/scroll/scroll'
+import VLoading from '@/base/loading/loading'
+import VNoResult from '@/base/noResult/noResult'
+
+import { mapMutations, mapActions } from 'vuex'
 import { getSearch } from '@/api/search'
 import { ERR_OK } from '@/api/config'
-import VScroll from '@/base/scroll/scroll'
 import { createSong } from '@/common/js/song'
-import VLoading from '@/base/loading/loading'
 // import {filterSinger} from '@/common/js/song'
 import Singer from '@/common/js/singer'
-import VNoResult from '@/base/noResult/noResult'
 import {getBounce } from '@/common/js/utils'
-import { mapMutations, mapActions } from 'vuex'
 
 const TYPE_SINGER = 'singer';
 const perpage = 20;

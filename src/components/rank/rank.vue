@@ -23,12 +23,14 @@
 </template>
 
 <script>
-import { getTopList } from '@/api/rank'
-import { ERR_OK } from '@/api/config'
+
 import VScroll from '@/base/scroll/scroll'
 import VLoading from '@/base/loading/loading'
+
 import {mapMutations} from 'vuex'
 import {playListMixin} from '@/common/js/mixins'
+import { getTopList } from '@/api/rank'
+import { ERR_OK } from '@/api/config'
 
 export default {
   name: 'hello',
